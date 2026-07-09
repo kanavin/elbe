@@ -11,7 +11,7 @@ import subprocess
 import pytest
 
 from elbepack.main import run_elbe_subcommand
-from elbepack.tests import parametrize_xml_test_files, xml_test_files
+from elbepack.tests import parametrize_xml_test_files, xml_test_files, xml_base_extended_test_files
 
 
 here = pathlib.Path(__file__).parent
@@ -157,3 +157,13 @@ def test_pbuilder_build(initvm, xml, tmp_path, request):
         'libgpio1-dbgsym_3.0.0_amd64.deb\n'
         'libgpio1_3.0.0_amd64.deb\n'
     )
+
+@pytest.mark.slow
+@pytest.mark.parametrize("base_xml_path, extended_xml_path", xml_base_extended_test_files())
+def test_base_extended_build(initvm, tmp_path, base_xml_path, extended_xml_path):
+    base_build = tmp_path / 'base-build'
+    base_build_image = base_build / 'base-rootfs.tgz'
+    extended_build = tmp_path / 'extended-build'
+
+    initvm('submit', '--output', base_build, '--skip-build-bin', '--skip-build-sources', base_xml_path)
+    initvm('submit', '--output', extended_build, '--skip-build-bin', '--skip-build-sources', '--base-image', base_build_image, extended_xml_path)

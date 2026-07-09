@@ -15,6 +15,12 @@ def xml_test_files(prefix):
         if file.name.startswith(prefix) and file.name.endswith('.xml')
     ]
 
+def xml_base_extended_test_files():
+    return [
+        (file.joinpath('image-base.xml'),file.joinpath('image-extended.xml'))
+        for file
+        in pathlib.Path('tests/base-extended').iterdir()
+    ]
 
 def parametrize_xml_test_files(name, prefix):
     """ Decorator to parametrize test functions for matching test XML files """
